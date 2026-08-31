@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#07091c" />
-    <title>{{FULL_NAME}} — Digital Business Card</title>
+    <title>{{GIVEN_NAME}} 'Roo' {{FAMILY_NAME}} — Digital Business Card</title>
   </head>
   <body>
     <div class="ambient" aria-hidden="true">
@@ -23,13 +23,37 @@
           <div class="contact-card__spotlight" aria-hidden="true"></div>
 
           <header class="identity">
-            <div class="monogram" aria-hidden="true">
-              <span>A</span><i></i><span>G</span>
+            <div class="avatar-rotator" aria-hidden="true">
+              <img
+                class="avatar-rotator__image avatar-rotator__image--creature"
+                src="/me/avatar-creature.jpg"
+                width="512"
+                height="512"
+                alt=""
+                decoding="async"
+                fetchpriority="high"
+              />
+              <img
+                class="avatar-rotator__image avatar-rotator__image--travel"
+                src="/me/avatar-travel.jpg"
+                width="512"
+                height="512"
+                alt=""
+                decoding="async"
+              />
+              <img
+                class="avatar-rotator__image avatar-rotator__image--selfie"
+                src="/me/avatar-selfie.jpg"
+                width="512"
+                height="512"
+                alt=""
+                decoding="async"
+              />
             </div>
             <div class="identity__copy">
               <p class="eyebrow">Digital calling card <span>·</span> 01</p>
-              <h1 id="card-title">{{FULL_NAME}}</h1>
-              <p class="identity__lede">Two disciplines. One direct line.</p>
+              <h1 id="card-title">{{GIVEN_NAME}} <span class="identity__nickname">'Roo'</span> {{FAMILY_NAME}}</h1>
+              <p class="identity__lede">I. Am. Atomic.</p>
             </div>
             <div class="signal" aria-label="Available on Discord">
               <span class="signal__pulse" aria-hidden="true"></span>
@@ -38,24 +62,53 @@
           </header>
 
           <section class="roles" aria-label="Professional roles">
-            <article class="role-card">
-              <div class="role-mark" aria-hidden="true">{{ROLE_1_MARK}}</div>
+            <article class="role-card role-card--yipitdata">
+              <div class="role-mark role-mark--yipitdata" aria-hidden="true">
+                <img src="/me/yipitdata-logo.svg" width="143" height="34" alt="" decoding="async" />
+              </div>
               <div class="role-card__copy">
                 <p class="role-card__number">Role 01</p>
                 <h2>{{ROLE_1_TITLE}}</h2>
                 <p>{{ROLE_1_ORGANIZATION}}</p>
               </div>
-              <span class="role-card__arrow" aria-hidden="true">↗</span>
+              <a
+                class="role-card__link interactive-surface"
+                href="https://yipitdata.com/"
+                target="_blank"
+                rel="noreferrer noopener"
+                referrerpolicy="no-referrer"
+                aria-label="Visit the YipitData website"
+                data-magnetic
+              >
+                <span>Website</span>
+                <span class="role-card__link-icon" aria-hidden="true">↗</span>
+              </a>
             </article>
 
-            <article class="role-card">
-              <div class="role-mark role-mark--alt" aria-hidden="true">{{ROLE_2_MARK}}</div>
+            <article class="role-card role-card--cyberpunk">
+              <div class="role-mark role-mark--cyberpunk" aria-hidden="true">
+                <img src="/me/brand-kanji.png" width="54" height="54" alt="" decoding="async" />
+              </div>
               <div class="role-card__copy">
                 <p class="role-card__number">Role 02</p>
-                <h2>{{ROLE_2_TITLE}}</h2>
+                <h2 class="role-card__title role-card__title--stacked">
+                  <span>{{ROLE_2_TITLE_LINE_1}}</span>
+                  <span>{{ROLE_2_TITLE_LINE_2}}</span>
+                </h2>
                 <p>{{ROLE_2_ORGANIZATION}}</p>
               </div>
-              <span class="role-card__arrow" aria-hidden="true">↗</span>
+              <a
+                class="role-card__link interactive-surface"
+                href="https://matsuricon.org/"
+                target="_blank"
+                rel="noreferrer noopener"
+                referrerpolicy="no-referrer"
+                aria-label="Visit the Matsuricon website"
+                data-magnetic
+              >
+                <span>Website</span>
+                <span class="role-card__link-icon" aria-hidden="true">↗</span>
+              </a>
             </article>
           </section>
 
@@ -78,11 +131,20 @@
             </div>
 
             <div class="discord-actions">
-              <button class="button button--discord no-js-hidden" type="button" data-copy-discord data-magnetic>
+              <button
+                class="button button--discord interactive-surface no-js-hidden"
+                type="button"
+                data-copy-discord
+                data-magnetic
+              >
                 <span>Copy username</span>
                 <span class="button__icon" aria-hidden="true">⌘</span>
               </button>
-              <a class="button button--discord button--ghost" href="{{DISCORD_DEEP_LINK}}" data-magnetic>
+              <a
+                class="button button--discord button--ghost interactive-surface"
+                href="{{DISCORD_DEEP_LINK}}"
+                data-magnetic
+              >
                 <span>Open Discord</span>
                 <span class="button__icon" aria-hidden="true">↗</span>
               </a>
@@ -90,18 +152,18 @@
           </section>
 
           <nav class="contact-actions" aria-label="Other contact options">
-            <a class="action" href="{{VCARD_PATH}}" download data-magnetic>
+            <a class="action interactive-surface" href="{{VCARD_PATH}}" download data-magnetic>
               <span class="action__glyph" aria-hidden="true">＋</span>
               <span class="action__copy"><strong>Add to contacts</strong><small>VCF file</small></span>
               <span class="action__arrow" aria-hidden="true">↓</span>
             </a>
-            <a class="action" href="{{MAILTO_URL}}" data-magnetic>
+            <a class="action interactive-surface" href="{{MAILTO_URL}}" data-magnetic>
               <span class="action__glyph" aria-hidden="true">@</span>
               <span class="action__copy"><strong>Email</strong><small>{{EMAIL}}</small></span>
               <span class="action__arrow" aria-hidden="true">↗</span>
             </a>
             <a
-              class="action"
+              class="action interactive-surface"
               href="{{LINKEDIN_URL}}"
               target="_blank"
               rel="noreferrer noopener"
@@ -113,7 +175,7 @@
               <span class="action__arrow" aria-hidden="true">↗</span>
             </a>
             <a
-              class="action"
+              class="action interactive-surface"
               href="{{QR_PATH}}"
               target="_blank"
               rel="noreferrer noopener"
@@ -130,7 +192,7 @@
             <a href="{{MAILTO_URL}}">{{EMAIL}}</a>
             <span aria-hidden="true">/</span>
             <a href="{{CARD_URL}}" data-card-url>{{CARD_URL_DISPLAY}}</a>
-            <span class="card-footer__privacy">No trackers. No analytics.</span>
+            <span class="card-footer__privacy">Say hey.</span>
           </footer>
 
           <p class="status-toast" role="status" aria-live="polite" aria-atomic="true" data-status></p>

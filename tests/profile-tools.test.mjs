@@ -10,6 +10,7 @@ import {
   foldVcardLine,
   makeQrArtifacts,
   makeVcard,
+  splitBalancedTitle,
   validateProfile,
   vcardEscape,
 } from '../scripts/profile-tools.mjs'
@@ -77,6 +78,11 @@ test('escapes HTML and vCard text safely', () => {
   assert.equal(escapeHtml('<a title="x">&</a>'), '&lt;a title=&quot;x&quot;&gt;&amp;&lt;/a&gt;')
   assert.equal(vcardEscape('a,b;c\\d\ne'), 'a\\,b\\;c\\\\d\\ne')
   assert.equal(vcardEscape('one\r\ntwo\rthree\nfour'), 'one\\ntwo\\nthree\\nfour')
+})
+
+test('splits multiword role titles into balanced display lines', () => {
+  assert.deepEqual(splitBalancedTitle('Alpha Systems Platform Lead'), ['Alpha Systems', 'Platform Lead'])
+  assert.deepEqual(splitBalancedTitle('Engineer'), ['Engineer', ''])
 })
 
 test('folds vCard lines at 75 UTF-8 bytes without splitting Unicode', () => {

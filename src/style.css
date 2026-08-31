@@ -39,6 +39,7 @@
     --violet: #9a76ff;
     --cyan: #52e8ff;
     --discord: #8f9cff;
+    --roo-purple: #cb6bd3;
     color: var(--ink);
     background: var(--night);
     color-scheme: dark;
@@ -215,40 +216,44 @@
     border-bottom: 1px solid var(--line);
   }
 
-  .monogram {
+  .avatar-rotator {
     position: relative;
-    display: grid;
     width: 74px;
     aspect-ratio: 1;
-    grid-template-columns: 1fr 1fr;
-    place-items: center;
     overflow: hidden;
     border: 1px solid rgba(166, 174, 255, 0.26);
     border-radius: 22px;
-    color: #fff;
     background:
       linear-gradient(140deg, rgba(161, 124, 255, 0.3), rgba(82, 232, 255, 0.08)),
       rgba(255, 255, 255, 0.035);
-    box-shadow: inset 0 0 26px rgba(137, 105, 255, 0.12);
-    font-size: 26px;
-    font-weight: 750;
-    letter-spacing: -0.12em;
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.24),
+      inset 0 0 26px rgba(137, 105, 255, 0.12);
   }
 
-  .monogram i {
+  .avatar-rotator::after {
     position: absolute;
-    width: 1px;
-    height: 48%;
-    rotate: 23deg;
-    background: linear-gradient(transparent, var(--cyan), transparent);
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      inset 0 -1px 0 rgba(4, 8, 25, 0.32);
+    content: "";
+    pointer-events: none;
   }
 
-  .monogram span:first-child {
-    translate: 3px -4px;
-  }
-
-  .monogram span:last-child {
-    translate: -3px 4px;
+  .avatar-rotator__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.06) rotate(-2deg);
+    transform-origin: center;
+    will-change: opacity, transform;
   }
 
   .eyebrow {
@@ -271,6 +276,13 @@
     font-weight: 680;
     letter-spacing: -0.06em;
     line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .identity__nickname {
+    color: #fff6ff;
+    -webkit-text-stroke: 1px var(--roo-purple);
+    text-shadow: 0 0 18px rgba(203, 107, 211, 0.3);
   }
 
   .identity__lede {
@@ -328,11 +340,88 @@
     opacity: 0;
     content: "";
     background: linear-gradient(115deg, rgba(154, 118, 255, 0.07), transparent 55%);
-    transition: opacity 220ms ease;
   }
 
-  .role-card:hover::before {
-    opacity: 1;
+  .role-card--yipitdata {
+    --yipit-ink: #02272f;
+    --yipit-deep-teal: #043a44;
+    --yipit-cloud: #d5e8ec;
+    --yipit-orange: #d9662f;
+
+    border-color: rgba(213, 232, 236, 0.32);
+    background:
+      radial-gradient(circle at 88% 14%, rgba(217, 102, 47, 0.2), transparent 34%),
+      linear-gradient(142deg, var(--yipit-deep-teal), var(--yipit-ink) 68%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -28px 48px rgba(0, 0, 0, 0.08);
+  }
+
+  .role-card--yipitdata::before {
+    inset: -65% -22%;
+    opacity: 0.28;
+    background:
+      radial-gradient(circle, rgba(187, 234, 247, 0.9) 0 1px, transparent 1.5px) 0 0 / 10px 10px,
+      radial-gradient(circle, rgba(217, 102, 47, 0.88) 0 1px, transparent 1.5px) 5px 4px / 13px 13px;
+    mask-image: linear-gradient(158deg, transparent 35%, #000 45%, #000 55%, transparent 65%);
+    transform: rotate(-5deg);
+  }
+
+  .role-card--yipitdata > * {
+    z-index: 1;
+  }
+
+  .role-card--cyberpunk {
+    --cyber-cyan: #00f5ff;
+    --cyber-pink: #ff2d78;
+    --cyber-purple: #a96bff;
+
+    border-color: rgba(0, 245, 255, 0.42);
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 82% 16%, rgba(169, 107, 255, 0.2), transparent 43%),
+      linear-gradient(135deg, rgba(0, 245, 255, 0.08), transparent 38%),
+      #0b1024;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 45, 120, 0.08),
+      inset 0 0 28px rgba(0, 245, 255, 0.045);
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+  }
+
+  .role-card--cyberpunk::before {
+    opacity: 0.44;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 3px,
+        rgba(244, 247, 255, 0.035) 4px
+      ),
+      linear-gradient(rgba(0, 245, 255, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 245, 255, 0.09) 1px, transparent 1px),
+      linear-gradient(115deg, rgba(255, 45, 120, 0.1), transparent 58%);
+    background-size:
+      auto,
+      28px 28px,
+      28px 28px,
+      auto;
+  }
+
+  .role-card--cyberpunk::after {
+    position: absolute;
+    inset: 8px 9px;
+    content: "";
+    background:
+      linear-gradient(90deg, var(--cyber-cyan), transparent) left top / 34px 1px no-repeat,
+      linear-gradient(var(--cyber-cyan), transparent) left top / 1px 24px no-repeat,
+      linear-gradient(270deg, var(--cyber-pink), transparent) right bottom / 34px 1px no-repeat,
+      linear-gradient(0deg, var(--cyber-pink), transparent) right bottom / 1px 24px no-repeat;
+    opacity: 0.68;
+    pointer-events: none;
+  }
+
+  .role-card--cyberpunk > * {
+    z-index: 1;
   }
 
   .role-mark {
@@ -354,6 +443,42 @@
     border-color: rgba(82, 232, 255, 0.24);
     color: #bdf7ff;
     background: linear-gradient(145deg, rgba(82, 232, 255, 0.16), rgba(82, 232, 255, 0.03));
+  }
+
+  .role-mark--yipitdata {
+    width: 78px;
+    height: 54px;
+    aspect-ratio: auto;
+    border-color: rgba(213, 232, 236, 0.24);
+    border-radius: 14px;
+    background: rgba(213, 232, 236, 0.08);
+  }
+
+  .role-mark--yipitdata img {
+    display: block;
+    width: 64px;
+    height: auto;
+  }
+
+  .role-mark--cyberpunk {
+    overflow: hidden;
+    border-color: rgba(255, 45, 120, 0.58);
+    border-radius: 3px;
+    background:
+      radial-gradient(circle, rgba(169, 107, 255, 0.18), transparent 67%),
+      #05050f;
+    box-shadow:
+      0 0 18px rgba(255, 45, 120, 0.14),
+      inset 0 0 15px rgba(0, 245, 255, 0.08);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .role-mark--cyberpunk img {
+    display: block;
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px rgba(255, 45, 120, 0.52));
   }
 
   .role-card__copy {
@@ -379,17 +504,78 @@
     line-height: 1.2;
   }
 
+  .role-card__title--stacked span {
+    display: block;
+  }
+
+  .role-card__title--stacked span:empty {
+    display: none;
+  }
+
   .role-card__copy > p:last-child {
     margin-top: 5px;
     color: var(--muted);
     font-size: 12px;
   }
 
-  .role-card__arrow {
+  .role-card--yipitdata .role-card__number {
+    color: var(--yipit-cloud);
+  }
+
+  .role-card--yipitdata h2 {
+    color: #fff;
+  }
+
+  .role-card--yipitdata .role-card__copy > p:last-child {
+    color: #ef8d5f;
+    font-weight: 700;
+  }
+
+  .role-card--cyberpunk .role-card__number {
+    color: var(--cyber-cyan);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.42);
+  }
+
+  .role-card--cyberpunk h2 {
+    color: #f4f7ff;
+  }
+
+  .role-card--cyberpunk .role-card__copy > p:last-child {
+    color: #ff8eb5;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .role-card__link {
+    --mag-x: 0px;
+    --mag-y: 0px;
     position: relative;
-    align-self: start;
+    display: inline-flex;
+    min-height: 42px;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border: 1px solid rgba(196, 205, 255, 0.22);
+    border-radius: 12px;
+    color: #f4f6ff;
+    background: rgba(7, 9, 28, 0.42);
+    font-size: 11px;
+    font-weight: 720;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    white-space: nowrap;
+    transform: translate(var(--mag-x), var(--mag-y));
+    transition: transform 140ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  }
+
+  .role-card__link-icon {
     color: var(--faint);
-    font-size: 13px;
+    font-size: 12px;
+    transition: color 180ms ease;
   }
 
   .discord-panel {
@@ -477,7 +663,7 @@
     border-radius: 14px;
     text-decoration: none;
     transform: translate(var(--mag-x), var(--mag-y));
-    transition: transform 140ms ease, border-color 180ms ease, background 180ms ease;
+    transition: transform 140ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
   }
 
   .button--discord {
@@ -486,11 +672,6 @@
     background: #eef0ff;
     font-size: 13px;
     font-weight: 720;
-    cursor: pointer;
-  }
-
-  .button--discord:hover {
-    background: #fff;
   }
 
   .button--ghost {
@@ -499,14 +680,10 @@
     background: rgba(255, 255, 255, 0.055);
   }
 
-  .button--ghost:hover {
-    border-color: rgba(192, 199, 255, 0.42);
-    background: rgba(255, 255, 255, 0.09);
-  }
-
   .button__icon {
     font-size: 15px;
     opacity: 0.65;
+    transition: color 180ms ease, opacity 180ms ease;
   }
 
   .contact-actions {
@@ -532,14 +709,8 @@
     background: rgba(255, 255, 255, 0.022);
     text-align: left;
     text-decoration: none;
-    cursor: pointer;
     transform: translate(var(--mag-x), var(--mag-y));
-    transition: transform 140ms ease, border-color 180ms ease, background 180ms ease;
-  }
-
-  .action:hover {
-    border-color: rgba(160, 174, 239, 0.28);
-    background: rgba(255, 255, 255, 0.045);
+    transition: transform 140ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
   }
 
   .action__glyph {
@@ -589,6 +760,57 @@
   .action__arrow {
     color: var(--faint);
     font-size: 12px;
+    transition: color 180ms ease;
+  }
+
+  .interactive-surface {
+    cursor: pointer;
+  }
+
+  .interactive-surface:focus-visible {
+    border-color: rgba(82, 232, 255, 0.52);
+    box-shadow: 0 0 0 1px rgba(82, 232, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .button--discord.interactive-surface:focus-visible {
+    background: #fff;
+  }
+
+  .button--ghost.interactive-surface:focus-visible,
+  .action.interactive-surface:focus-visible,
+  .role-card__link.interactive-surface:focus-visible {
+    background: rgba(82, 232, 255, 0.07);
+  }
+
+  .interactive-surface:focus-visible .button__icon,
+  .interactive-surface:focus-visible .action__arrow,
+  .interactive-surface:focus-visible .role-card__link-icon {
+    color: var(--cyan);
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .interactive-surface:hover {
+      border-color: rgba(82, 232, 255, 0.42);
+      box-shadow: 0 0 0 1px rgba(82, 232, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .button--discord.interactive-surface:hover {
+      background: #fff;
+    }
+
+    .button--ghost.interactive-surface:hover,
+    .action.interactive-surface:hover,
+    .role-card__link.interactive-surface:hover {
+      background: rgba(82, 232, 255, 0.07);
+    }
+
+    .interactive-surface:hover .button__icon,
+    .interactive-surface:hover .action__arrow,
+    .interactive-surface:hover .role-card__link-icon {
+      color: var(--cyan);
+      opacity: 1;
+    }
   }
 
   .card-footer {
@@ -610,11 +832,17 @@
     align-items: center;
     padding-inline: 2px;
     color: #aab3d7;
-    text-decoration: none;
+    text-decoration-line: underline;
+    text-decoration-color: rgba(170, 179, 215, 0.32);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color 180ms ease, text-decoration-color 180ms ease;
   }
 
-  .card-footer a:hover {
+  .card-footer a:hover,
+  .card-footer a:focus-visible {
     color: var(--cyan);
+    text-decoration-color: rgba(82, 232, 255, 0.78);
   }
 
   .card-footer__privacy {
@@ -775,10 +1003,9 @@
       gap: 15px;
     }
 
-    .monogram {
+    .avatar-rotator {
       width: 60px;
       border-radius: 18px;
-      font-size: 21px;
     }
 
     .signal {
@@ -842,6 +1069,15 @@
     .role-card h2 {
       font-size: 14px;
     }
+
+    .role-card {
+      grid-template-columns: auto 1fr;
+    }
+
+    .role-card__link {
+      width: 100%;
+      grid-column: 1 / -1;
+    }
   }
 }
 
@@ -860,6 +1096,23 @@
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes avatar-cycle {
+    0% {
+      opacity: 0;
+      transform: scale(1.08) rotate(-2.5deg);
+    }
+    5%,
+    31% {
+      opacity: 1;
+      transform: scale(1.02) rotate(0deg);
+    }
+    37%,
+    100% {
+      opacity: 0;
+      transform: scale(0.96) rotate(2.5deg);
     }
   }
 
@@ -929,6 +1182,22 @@
     animation: sweep 1.8s 480ms ease-out both;
   }
 
+  .avatar-rotator__image {
+    animation: avatar-cycle 12s ease-in-out infinite;
+  }
+
+  .avatar-rotator__image--creature {
+    animation-delay: -0.6s;
+  }
+
+  .avatar-rotator__image--travel {
+    animation-delay: 3.4s;
+  }
+
+  .avatar-rotator__image--selfie {
+    animation-delay: 7.4s;
+  }
+
   .ambient__orb--violet {
     animation: drift-violet 18s ease-in-out infinite;
   }
@@ -988,6 +1257,16 @@
     .button,
     .action {
       transform: none !important;
+    }
+
+    .avatar-rotator__image {
+      opacity: 0;
+      transform: none !important;
+      animation: none !important;
+    }
+
+    .avatar-rotator__image:first-child {
+      opacity: 1;
     }
   }
 }

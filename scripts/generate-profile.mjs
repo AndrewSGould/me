@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { escapeHtml, makeQrArtifacts, makeVcard, validateProfile } from './profile-tools.mjs'
+import { escapeHtml, makeQrArtifacts, makeVcard, splitBalancedTitle, validateProfile } from './profile-tools.mjs'
 
 const root = resolve(import.meta.dirname, '..')
 const permanentCardUrlSha256 = 'b7e7d99e2dbc2b00012672c352c9cce56537acbd6e12b5d7b2ad187d92342a9f'
@@ -54,6 +54,7 @@ const vcardFileName = `${fileSlug}.vcf`
 const webQrFileName = 'card-qr.svg'
 const qr = makeQrArtifacts(profile.cardUrl)
 const discordDeepLink = `discord://-/users/${profile.discord.userId}`
+const [role2TitleLine1, role2TitleLine2] = splitBalancedTitle(profile.roles[1].title)
 const csp = mode === 'dev'
   ? "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' ws://localhost:* ws://127.0.0.1:*; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
   : "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
@@ -61,12 +62,15 @@ const csp = mode === 'dev'
 const replacements = {
   CSP: csp,
   FULL_NAME: profile.fullName,
+  GIVEN_NAME: profile.givenName,
+  FAMILY_NAME: profile.familyName,
   DISPLAY_NAME: profile.discord.displayName,
   ROLE_1_MARK: profile.roles[0].mark,
   ROLE_1_TITLE: profile.roles[0].title,
   ROLE_1_ORGANIZATION: profile.roles[0].organization,
   ROLE_2_MARK: profile.roles[1].mark,
-  ROLE_2_TITLE: profile.roles[1].title,
+  ROLE_2_TITLE_LINE_1: role2TitleLine1,
+  ROLE_2_TITLE_LINE_2: role2TitleLine2,
   ROLE_2_ORGANIZATION: profile.roles[1].organization,
   DISCORD_USERNAME: profile.discord.username,
   DISCORD_DEEP_LINK: discordDeepLink,

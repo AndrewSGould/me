@@ -63,6 +63,25 @@ export function escapeHtml(value) {
     .replaceAll("'", '&#39;')
 }
 
+export function splitBalancedTitle(value) {
+  const words = String(value).trim().split(/\s+/)
+  if (words.length < 2) return [words[0] ?? '', '']
+
+  let splitIndex = 1
+  let smallestDifference = Number.POSITIVE_INFINITY
+  for (let index = 1; index < words.length; index += 1) {
+    const firstLineLength = words.slice(0, index).join(' ').length
+    const secondLineLength = words.slice(index).join(' ').length
+    const difference = Math.abs(firstLineLength - secondLineLength)
+    if (difference < smallestDifference) {
+      smallestDifference = difference
+      splitIndex = index
+    }
+  }
+
+  return [words.slice(0, splitIndex).join(' '), words.slice(splitIndex).join(' ')]
+}
+
 export function vcardEscape(value) {
   return String(value)
     .replaceAll('\\', '\\\\')
