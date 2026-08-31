@@ -65,9 +65,21 @@ test('rotates through three locally cropped identity images', () => {
   for (const source of avatarSources) {
     assert.equal(existsSync(resolve(root, 'public', source.replace(/^\//, ''))), true)
   }
+  for (const format of ['avif', 'webp']) {
+    const modernSources = [
+      `/me/avatar-creature.${format}`,
+      `/me/avatar-travel.${format}`,
+      `/me/avatar-selfie.${format}`,
+    ]
+    for (const source of modernSources) {
+      assert.match(template, new RegExp(`srcset="${source.replaceAll('/', '\\/')}" type="image\\/${format}"`))
+      assert.equal(existsSync(resolve(root, 'public', source.replace(/^\//, ''))), true)
+    }
+  }
+  assert.equal((template.match(/class="avatar-rotator__image[^>]+width="256"[^>]+height="256"/g) ?? []).length, 3)
   assert.match(styles, /@keyframes avatar-cycle/)
   assert.match(styles, /\.avatar-rotator__image--travel\s*{\s*animation-delay: 3\.4s;/)
-  assert.match(styles, /\.avatar-rotator__image:first-child\s*{\s*opacity: 1;/)
+  assert.match(styles, /\.avatar-rotator > picture:first-child \.avatar-rotator__image\s*{\s*opacity: 1;/)
 })
 
 test('renders the nickname treatment and atomic tagline', () => {
@@ -103,8 +115,10 @@ test('uses the official data-company wordmark and current brand palette', () => 
 
 test('uses the local cyberpunk mark and brand treatment', () => {
   assert.match(template, /class="role-card role-card--cyberpunk"/)
-  assert.match(template, /src="\/me\/brand-kanji\.png" width="54" height="54" alt=""/)
-  assert.equal(existsSync(resolve(root, 'public', 'me', 'brand-kanji.png')), true)
+  assert.match(template, /src="\/me\/brand-kanji\.png" width="192" height="192" alt=""/)
+  for (const extension of ['png', 'webp', 'avif']) {
+    assert.equal(existsSync(resolve(root, 'public', 'me', `brand-kanji.${extension}`)), true)
+  }
   assert.match(styles, /--cyber-cyan: #00f5ff/)
   assert.match(styles, /--cyber-pink: #ff2d78/)
   assert.match(styles, /\.role-card--cyberpunk\s*{[^}]*clip-path: polygon/s)
@@ -133,8 +147,38 @@ test('progressively enhances the direct QR link into a native dialog', () => {
 test('limits pointer effects and removes decorative movement for reduced motion', () => {
   assert.match(script, /\(hover: hover\) and \(pointer: fine\)/)
   assert.match(script, /prefers-reduced-motion: reduce/)
+  assert.match(script, /is-spotlight-tracking/)
+  assert.match(script, /const settleDuration = 700/)
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/)
   assert.match(styles, /\.card-stage,\s*\.button,\s*\.action\s*{\s*transform: none !important;/s)
+  assert.match(
+    styles,
+    /\.contact-card__spotlight,\s*\.signal__pulse,\s*\.role-card--cyberpunk::after,\s*\.button--discord::after,\s*\.qr-dialog\[open\] \.qr-dialog__code\s*{\s*animation: none !important;/s,
+  )
+})
+
+test('keeps post-load motion restrained and interaction feedback one-shot', () => {
+  assert.match(styles, /@keyframes spotlight-idle-drift/)
+  assert.match(styles, /animation: spotlight-idle-drift 19s ease-in-out infinite/)
+  assert.match(styles, /animation: signal-halo 3\.5s ease-in-out infinite/)
+  assert.match(styles, /animation: cyber-scan 10s ease-in-out infinite/)
+  assert.match(styles, /animation: copy-confirmation 520ms [^;]+ both/)
+  assert.match(styles, /animation: qr-code-glow 900ms 140ms ease-out both/)
+  assert.match(script, /if \(result === 'copied'\) \{[\s\S]*?classList\.add\('is-copy-confirmed'\)/)
+  assert.match(script, /event\.animationName === 'copy-confirmation'/)
+})
+
+test('uses a cheaper rendering mode on narrow and coarse-pointer devices', () => {
+  assert.match(styles, /@media \(max-width: 720px\), \(pointer: coarse\)/)
+  assert.match(
+    styles,
+    /@media \(max-width: 720px\), \(pointer: coarse\)[\s\S]*?\.contact-card\s*{\s*backdrop-filter: none;\s*animation: enter-card 620ms [^;]+ both;/,
+  )
+  assert.match(
+    styles,
+    /\.ambient__orb--violet,\s*\.ambient__orb--cyan,\s*\.contact-card__spotlight,\s*\.role-card--cyberpunk::after\s*{\s*animation: none;/,
+  )
+  assert.match(styles, /\.ambient__orb\s*{\s*filter: blur\(48px\);\s*will-change: auto;/)
 })
 
 test('keeps the homepage and permanent card route as separate Vite entries', () => {

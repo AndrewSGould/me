@@ -205,6 +205,7 @@
       rgba(132, 229, 255, 0.11),
       transparent 42%
     );
+    will-change: transform;
   }
 
   .identity {
@@ -241,6 +242,11 @@
       inset 0 -1px 0 rgba(4, 8, 25, 0.32);
     content: "";
     pointer-events: none;
+  }
+
+  .avatar-rotator picture,
+  .role-mark--cyberpunk picture {
+    display: contents;
   }
 
   .avatar-rotator__image {
@@ -667,11 +673,28 @@
   }
 
   .button--discord {
+    position: relative;
+    overflow: hidden;
     border: 1px solid transparent;
     color: #0d1234;
     background: #eef0ff;
     font-size: 13px;
     font-weight: 720;
+  }
+
+  .button--discord::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    aspect-ratio: 1;
+    border: 1px solid rgba(33, 184, 207, 0.58);
+    border-radius: 999px;
+    box-shadow: 0 0 18px rgba(82, 232, 255, 0.18);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.25);
   }
 
   .button--ghost {
@@ -1128,6 +1151,63 @@
     }
   }
 
+  @keyframes spotlight-idle-drift {
+    0%,
+    100% {
+      transform: translate3d(-8px, -2px, 0);
+    }
+    50% {
+      transform: translate3d(10px, 7px, 0);
+    }
+  }
+
+  @keyframes signal-halo {
+    0%,
+    100% {
+      box-shadow: 0 0 0 5px rgba(82, 232, 255, 0.08), 0 0 14px var(--cyan);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 0 7px rgba(82, 232, 255, 0.035), 0 0 18px rgba(82, 232, 255, 0.82);
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes cyber-scan {
+    0%,
+    2% {
+      background-position: center -30%, left top, left top, right bottom, right bottom;
+    }
+    14%,
+    100% {
+      background-position: center 130%, left top, left top, right bottom, right bottom;
+    }
+  }
+
+  @keyframes copy-confirmation {
+    0% {
+      opacity: 0.52;
+      transform: translate(-50%, -50%) scale(0.25);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(5.2);
+    }
+  }
+
+  @keyframes qr-code-glow {
+    0%,
+    100% {
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.8);
+    }
+    46% {
+      box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.32),
+        0 0 0 1px rgba(255, 255, 255, 0.88),
+        0 0 30px rgba(82, 232, 255, 0.24);
+    }
+  }
+
   @keyframes edge-orbit {
     to {
       --edge-angle: 540deg;
@@ -1206,6 +1286,33 @@
     animation: drift-cyan 21s ease-in-out infinite;
   }
 
+  .contact-card__spotlight {
+    animation: spotlight-idle-drift 19s ease-in-out infinite;
+  }
+
+  .is-spotlight-tracking .contact-card__spotlight {
+    animation-play-state: paused;
+  }
+
+  .signal__pulse {
+    animation: signal-halo 3.5s ease-in-out infinite;
+  }
+
+  .role-card--cyberpunk::after {
+    background:
+      linear-gradient(to bottom, transparent, rgba(82, 232, 255, 0.11), transparent) center -30% / 100% 22%
+        no-repeat,
+      linear-gradient(90deg, var(--cyber-cyan), transparent) left top / 34px 1px no-repeat,
+      linear-gradient(var(--cyber-cyan), transparent) left top / 1px 24px no-repeat,
+      linear-gradient(270deg, var(--cyber-pink), transparent) right bottom / 34px 1px no-repeat,
+      linear-gradient(0deg, var(--cyber-pink), transparent) right bottom / 1px 24px no-repeat;
+    animation: cyber-scan 10s ease-in-out infinite;
+  }
+
+  .button--discord.is-copy-confirmed::after {
+    animation: copy-confirmation 520ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  }
+
   .roles,
   .discord-panel,
   .contact-actions,
@@ -1231,6 +1338,10 @@
 
   .qr-dialog[open] {
     animation: reveal-qr 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .qr-dialog[open] .qr-dialog__code {
+    animation: qr-code-glow 900ms 140ms ease-out both;
   }
 
   .qr-dialog[open]::backdrop {
@@ -1265,8 +1376,39 @@
       animation: none !important;
     }
 
-    .avatar-rotator__image:first-child {
+    .contact-card__spotlight,
+    .signal__pulse,
+    .role-card--cyberpunk::after,
+    .button--discord::after,
+    .qr-dialog[open] .qr-dialog__code {
+      animation: none !important;
+    }
+
+    .avatar-rotator > picture:first-child .avatar-rotator__image {
       opacity: 1;
+    }
+  }
+
+  @media (max-width: 720px), (pointer: coarse) {
+    .contact-card {
+      backdrop-filter: none;
+      animation: enter-card 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .ambient__orb--violet,
+    .ambient__orb--cyan,
+    .contact-card__spotlight,
+    .role-card--cyberpunk::after {
+      animation: none;
+    }
+
+    .ambient__orb {
+      filter: blur(48px);
+      will-change: auto;
+    }
+
+    .contact-card__spotlight {
+      will-change: auto;
     }
   }
 }

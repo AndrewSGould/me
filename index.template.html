@@ -24,31 +24,9 @@
 
           <header class="identity">
             <div class="avatar-rotator" aria-hidden="true">
-              <img
-                class="avatar-rotator__image avatar-rotator__image--creature"
-                src="/me/avatar-creature.jpg"
-                width="512"
-                height="512"
-                alt=""
-                decoding="async"
-                fetchpriority="high"
-              />
-              <img
-                class="avatar-rotator__image avatar-rotator__image--travel"
-                src="/me/avatar-travel.jpg"
-                width="512"
-                height="512"
-                alt=""
-                decoding="async"
-              />
-              <img
-                class="avatar-rotator__image avatar-rotator__image--selfie"
-                src="/me/avatar-selfie.jpg"
-                width="512"
-                height="512"
-                alt=""
-                decoding="async"
-              />
+              <picture><source srcset="/me/avatar-creature.avif" type="image/avif" /><source srcset="/me/avatar-creature.webp" type="image/webp" /><img class="avatar-rotator__image avatar-rotator__image--creature" src="/me/avatar-creature.jpg" width="256" height="256" alt="" decoding="async" fetchpriority="high" /></picture>
+              <picture><source srcset="/me/avatar-travel.avif" type="image/avif" /><source srcset="/me/avatar-travel.webp" type="image/webp" /><img class="avatar-rotator__image avatar-rotator__image--travel" src="/me/avatar-travel.jpg" width="256" height="256" alt="" decoding="async" fetchpriority="low" /></picture>
+              <picture><source srcset="/me/avatar-selfie.avif" type="image/avif" /><source srcset="/me/avatar-selfie.webp" type="image/webp" /><img class="avatar-rotator__image avatar-rotator__image--selfie" src="/me/avatar-selfie.jpg" width="256" height="256" alt="" decoding="async" fetchpriority="low" /></picture>
             </div>
             <div class="identity__copy">
               <p class="eyebrow">Digital calling card <span>·</span> 01</p>
@@ -87,7 +65,7 @@
 
             <article class="role-card role-card--cyberpunk">
               <div class="role-mark role-mark--cyberpunk" aria-hidden="true">
-                <img src="/me/brand-kanji.png" width="54" height="54" alt="" decoding="async" />
+                <picture><source srcset="/me/brand-kanji.avif" type="image/avif" /><source srcset="/me/brand-kanji.webp" type="image/webp" /><img src="/me/brand-kanji.png" width="192" height="192" alt="" decoding="async" /></picture>
               </div>
               <div class="role-card__copy">
                 <p class="role-card__number">Role 02</p>
