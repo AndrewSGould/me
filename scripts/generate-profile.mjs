@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { escapeHtml, makeQrArtifacts, makeVcard, validateProfile } from './profile-tools.mjs'
 
 const root = resolve(import.meta.dirname, '..')
-const permanentCardUrlSha256 = 'b4ad5e3c8aa7a16a4cf1a13f88085d80c4cc398fdbefaee75fd75ef9547f3124'
+const permanentCardUrlSha256 = 'b7e7d99e2dbc2b00012672c352c9cce56537acbd6e12b5d7b2ad187d92342a9f'
 const mode = process.argv.includes('--production')
   ? 'production'
   : process.argv.includes('--dev')
@@ -51,10 +51,12 @@ if (
 }
 const fileSlug = `${profile.givenName}-${profile.familyName}`.replaceAll(/[^A-Za-z0-9-]/g, '-')
 const vcardFileName = `${fileSlug}.vcf`
+const webQrFileName = 'card-qr.svg'
+const qr = makeQrArtifacts(profile.cardUrl)
 const discordDeepLink = `discord://-/users/${profile.discord.userId}`
 const csp = mode === 'dev'
   ? "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' ws://localhost:* ws://127.0.0.1:*; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
-  : "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+  : "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
 
 const replacements = {
   CSP: csp,
@@ -69,6 +71,7 @@ const replacements = {
   DISCORD_USERNAME: profile.discord.username,
   DISCORD_DEEP_LINK: discordDeepLink,
   VCARD_PATH: `/me/${vcardFileName}`,
+  QR_PATH: `/me/${webQrFileName}`,
   MAILTO_URL: `mailto:${profile.email}`,
   EMAIL: profile.email,
   LINKEDIN_URL: profile.linkedinUrl,
@@ -84,15 +87,24 @@ const html = template.replaceAll(/\{\{([A-Z0-9_]+)\}\}/g, (_, key) => {
 if (/\{\{[A-Z0-9_]+\}\}/.test(html)) throw new Error('Unresolved template token found.')
 
 mkdirSync(resolve(root, 'src', 'generated'), { recursive: true })
-writeFileSync(resolve(root, 'index.html'), html)
+mkdirSync(resolve(root, 'me'), { recursive: true })
+mkdirSync(resolve(root, 'public', 'me'), { recursive: true })
+
+// Remove generated files from the former GitHub Pages layout before Vite copies public/.
+rmSync(resolve(root, 'public', 'card-qr.svg'), { force: true })
+for (const name of readdirSync(resolve(root, 'public'))) {
+  if (name.toLowerCase().endsWith('.vcf')) rmSync(resolve(root, 'public', name), { force: true })
+}
+
+writeFileSync(resolve(root, 'me', 'index.html'), html)
 writeFileSync(
   resolve(root, 'src', 'generated', 'profile.ts'),
   `import type { CardProfile } from '../profile.ts'\n\nexport const profile = ${JSON.stringify(profile, null, 2)} as const satisfies CardProfile\n`,
 )
-writeFileSync(resolve(root, 'public', vcardFileName), makeVcard(profile))
+writeFileSync(resolve(root, 'public', 'me', vcardFileName), makeVcard(profile))
+writeFileSync(resolve(root, 'public', 'me', webQrFileName), qr.svg)
 
 if (loaded.source !== 'example') {
-  const qr = makeQrArtifacts(profile.cardUrl)
   const qrOutput = resolve(root, 'output', 'qr')
   mkdirSync(qrOutput, { recursive: true })
   writeFileSync(resolve(qrOutput, `${fileSlug}-QR.svg`), qr.svg)

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { validateProfile } from './profile-tools.mjs'
 
@@ -39,7 +39,9 @@ const sourceFiles = execFileSync(
   .filter(Boolean)
 
 for (const file of sourceFiles) {
-  const contents = readFileSync(resolve(root, file))
+  const sourcePath = resolve(root, file)
+  if (!existsSync(sourcePath)) continue
+  const contents = readFileSync(sourcePath)
   for (const value of protectedValues) {
     const valueBytes = Buffer.from(value, 'utf8')
     const appears = valueBytes.length >= 4

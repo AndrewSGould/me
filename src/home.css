@@ -1,0 +1,160 @@
+@layer reset, base, components;
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  h1,
+  p {
+    margin: 0;
+  }
+}
+
+@layer base {
+  :root {
+    color: #f3f5ff;
+    background: #07091c;
+    color-scheme: dark;
+    font-family:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100svh;
+    background:
+      radial-gradient(circle at 14% 12%, rgba(113, 72, 225, 0.28), transparent 30rem),
+      radial-gradient(circle at 92% 88%, rgba(28, 176, 193, 0.2), transparent 34rem),
+      linear-gradient(145deg, #080a21, #050615 70%);
+  }
+
+  a:focus-visible {
+    outline: 2px solid #61efff;
+    outline-offset: 4px;
+  }
+
+  ::selection {
+    color: #07091c;
+    background: #61efff;
+  }
+}
+
+@layer components {
+  .home-shell {
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+    padding:
+      max(24px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
+      max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  }
+
+  .home-card {
+    position: relative;
+    width: min(100%, 720px);
+    padding: clamp(32px, 7vw, 72px);
+    overflow: hidden;
+    border: 1px solid rgba(179, 192, 255, 0.16);
+    border-radius: clamp(24px, 4vw, 38px);
+    background:
+      linear-gradient(145deg, rgba(25, 31, 69, 0.82), rgba(9, 12, 35, 0.9)) padding-box,
+      linear-gradient(130deg, rgba(153, 119, 255, 0.55), rgba(82, 232, 255, 0.2)) border-box;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px);
+  }
+
+  .home-card::after {
+    position: absolute;
+    inset: auto -12% -42% 42%;
+    height: 70%;
+    border-radius: 50%;
+    background: rgba(73, 220, 235, 0.07);
+    content: "";
+    filter: blur(42px);
+    pointer-events: none;
+  }
+
+  .home-kicker {
+    color: #79efff;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .home-card h1 {
+    max-width: 10ch;
+    margin-top: 18px;
+    font-size: clamp(48px, 11vw, 92px);
+    font-weight: 680;
+    letter-spacing: -0.07em;
+    line-height: 0.88;
+  }
+
+  .home-lede {
+    max-width: 46ch;
+    margin-top: 28px;
+    color: #aeb6d3;
+    font-size: clamp(15px, 2vw, 18px);
+    line-height: 1.6;
+  }
+
+  .home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .home-action {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    min-height: 52px;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 32px;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    color: #0c1430;
+    background: #a8f5e4;
+    font-size: 14px;
+    font-weight: 720;
+    text-decoration: none;
+    transition: background 180ms ease, transform 180ms ease;
+  }
+
+  .home-action:hover {
+    background: #c7fff2;
+    transform: translateY(-2px);
+  }
+
+  .home-action--quiet {
+    border-color: rgba(183, 194, 246, 0.18);
+    color: #eff2ff;
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .home-action--quiet:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-action {
+      transition: none;
+    }
+
+    .home-action:hover {
+      transform: none;
+    }
+  }
+}

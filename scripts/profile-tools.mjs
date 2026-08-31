@@ -112,15 +112,15 @@ export function makeVcard(profile) {
 }
 
 export function makeQrArtifacts(payload) {
-  const options = { ecc: 'high', encoding: 'byte', version: 4, border: 4 }
+  const options = { ecc: 'high', encoding: 'byte', version: 3, border: 4 }
   const matrix = encodeQR(payload, 'raw', options)
-  if (matrix.length !== 41 || matrix.some((row) => row.length !== 41)) {
-    throw new Error('Expected a 41 by 41 Version 4 QR canvas including quiet zone.')
+  if (matrix.length !== 37 || matrix.some((row) => row.length !== 37)) {
+    throw new Error('Expected a 37 by 37 Version 3 QR canvas including quiet zone.')
   }
 
-  for (let y = 0; y < 41; y += 1) {
-    for (let x = 0; x < 41; x += 1) {
-      if ((x < 4 || y < 4 || x >= 37 || y >= 37) && matrix[y][x]) {
+  for (let y = 0; y < 37; y += 1) {
+    for (let x = 0; x < 37; x += 1) {
+      if ((x < 4 || y < 4 || x >= 33 || y >= 33) && matrix[y][x]) {
         throw new Error('QR quiet zone must remain four clear modules on every side.')
       }
     }
@@ -129,8 +129,8 @@ export function makeQrArtifacts(payload) {
   const encoded = encodeQR(payload, 'svg', options)
   const svg = encoded
     .replace(
-      '<svg viewBox="0 0 41 41" xmlns="http://www.w3.org/2000/svg">',
-      '<svg width="30mm" height="30mm" viewBox="0 0 41 41" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="41" height="41" fill="#fff"/>',
+      '<svg viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg">',
+      '<svg width="30mm" height="30mm" viewBox="0 0 37 37" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><rect width="37" height="37" fill="#fff"/>',
     )
     .replace('<path ', '<path fill="#000" ')
 
@@ -142,13 +142,13 @@ export function makeQrArtifacts(payload) {
     manifest: {
       payload,
       encoding: 'byte',
-      version: 4,
+      version: 3,
       errorCorrection: 'H',
-      symbolModules: 33,
+      symbolModules: 29,
       quietZoneModules: 4,
-      canvasModules: 41,
+      canvasModules: 37,
       overallSizeMm: 30,
-      moduleSizeMm: 30 / 41,
+      moduleSizeMm: 30 / 37,
       matrixSha256,
       svgSha256: createHash('sha256').update(svg).digest('hex'),
     },

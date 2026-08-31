@@ -1,16 +1,30 @@
-# QR-first digital business card
+# heyroo.dev
 
-A contact-first, framework-free business card built with Vite, TypeScript, and vanilla CSS. The production site is designed for GitHub Pages at the `/me/` project path. It makes no third-party runtime requests and keeps the production profile out of the public source tree.
+A portable, static personal site built with Vite and TypeScript. The repository may stay named `me`; hosting and URLs are defined by the Cloudflare configuration, not by the GitHub repository name.
+
+The current build has two real pages:
+
+- `/` is a profile-neutral placeholder for the future site.
+- `/me/` is the QR-first digital business card.
+
+Cloudflare Workers Static Assets serves the generated `dist/` directory. There is no Worker script, application server, framework runtime, analytics, service worker, external font, CDN asset, or third-party runtime request.
 
 ## Local development
 
 Requirements: Node.js 24 and npm.
 
 1. Copy `profile.example.json` to `.profile.local.json`.
-2. Replace the example fields locally. The local profile is ignored by Git.
+2. Replace the example fields locally, including the configured custom-domain `/me/` URL.
 3. Run `npm ci`, then `npm run dev`.
 
-The generator validates the profile and creates ignored versions of `index.html`, `src/generated/profile.ts`, and the `.vcf` contact file. If `.profile.local.json` is absent, ordinary development and pull-request builds use the committed example profile.
+The development server exposes both the homepage and `/me/`. The profile generator creates ignored files at:
+
+- `me/index.html`
+- `src/generated/profile.ts`
+- `public/me/<name>.vcf`
+- `public/me/card-qr.svg`
+
+If the local profile is absent, ordinary development, CI, and preview builds use committed example data.
 
 Useful checks:
 
@@ -20,29 +34,73 @@ npm run typecheck
 npm run build
 ```
 
-The build fails if minified HTML reaches 10 KiB, CSS reaches 30 KiB, JavaScript reaches 20 KiB, a production source map is emitted, privacy/CSP metadata is absent, or a loadable/runtime network resource is not same-origin and static.
+The final artifact is:
 
-## Production profile and deployment
+```text
+dist/
+├── index.html
+├── 404.html
+├── _headers
+├── assets/
+├── robots.txt
+└── me/
+    ├── index.html
+    ├── icons.svg
+    ├── card-qr.svg
+    └── <name>.vcf
+```
 
-The production profile is a single JSON object matching `profile.example.json`. Store it as the `CARD_PROFILE_JSON` secret in a GitHub environment named `profile-production`; do not commit it or paste it into a workflow file.
+The build enforces the card budgets independently of the future homepage: HTML below 10 KiB, referenced CSS below 30 KiB, and referenced JavaScript below 20 KiB. It also rejects production source maps, external runtime resources, network APIs, service workers, missing security policies, and stale card files at the origin root.
 
-Repository setup:
+## Production profile
 
-1. In **Settings > Pages**, select **GitHub Actions** as the source.
-2. Create the `profile-production` environment, add `CARD_PROFILE_JSON`, and limit its deployment branch to `main`.
-3. Keep the generated `github-pages` environment limited to `main`.
-4. Protect `main` and require the CI workflow before merging.
-5. Keep both environment secrets and Actions logs out of pull-request jobs.
+The production profile is one JSON object matching `profile.example.json`. Store it in Cloudflare Builds as the encrypted `CARD_PROFILE_JSON` secret. It is a build-time secret, not a runtime Worker variable.
 
-The deployment workflow is fail-closed: `npm run build:production` accepts only `CARD_PROFILE_JSON`. It will not silently deploy the example or local profile. Before generation, it compares the production fields against Git-tracked and non-ignored source files and fails generically if a value leaked into source. It also verifies the configured permanent URL against a committed SHA-256 fingerprint, without storing the URL itself. The build job can read repository contents; only the separate deploy job can write Pages and request an identity token. All third-party Actions are pinned to full commit SHAs, and Dependabot tracks both Actions and npm updates.
+`npm run build:production` is fail-closed:
 
-To exercise the production path locally without printing the JSON, load the ignored file into the environment and run `npm run build:production`. The build output is `dist/`.
+- the secret must exist and parse successfully;
+- the profile must pass validation;
+- its card URL must match the permanent URL fingerprint;
+- none of its values may appear in tracked or non-ignored repository source.
 
-## Privacy model
+The secret keeps personal fields out of GitHub code search and preview builds. It does not make the deployed card confidential; its rendered HTML, contact file, and QR payload are public.
 
-The deployed card is public. Avoiding source-control exposure only removes the profile from code search and pull-request artifacts; anyone who loads the deployed page can read its HTML, JavaScript, contact file, and network responses.
+## Cloudflare deployment
 
-The page adds `noindex,nofollow,noarchive,nosnippet`, a no-referrer policy, restrictive early meta CSP, and `noreferrer noopener` on external web links. It intentionally has no analytics, trackers, sitemap, canonical link, contact-bearing social metadata, service worker, external fonts, CDN assets, or project-level `robots.txt`. A `robots.txt` file under `/me/` would not control the origin because crawlers only recognize it at `/robots.txt`.
+`wrangler.jsonc` defines an assets-only Worker, the `heyroo.dev` custom-domain route, static HTML handling, and the custom 404 page. The zone must be active in the same Cloudflare account used by Builds.
+
+Connect this GitHub repository under **Workers & Pages > Create > Import a repository** and configure separate build triggers:
+
+| Trigger | Build command | Deploy command | Profile secret |
+| --- | --- | --- | --- |
+| Production `main` | `npm run build:production` | `npm run deploy:cloudflare` | `CARD_PROFILE_JSON` |
+| Preview branches | `npm run build` | `npm run deploy:cloudflare:preview` | none |
+
+The deploy command independently checks that `dist/me/index.html` contains the permanent production URL before publishing the custom domain. Preview uploads contain example data and do not receive deployment authority over production.
+
+The GitHub Actions CI workflow remains read-only and builds example data for pushes and pull requests. GitHub Pages is no longer part of deployment. After the Cloudflare cutover, disable Pages unless an older printed card still depends on its URL.
+
+For a local Cloudflare-style preview, run:
+
+```sh
+npm run preview:cloudflare
+```
+
+Do not run the production deploy command until a successful production build has populated `dist/`.
+
+## Privacy and hardening
+
+The card is public. These controls reduce incidental discovery and data leakage; they are not authentication:
+
+- origin-root `robots.txt` discourages crawling only under `/me/`;
+- card HTML and response headers apply `noindex,nofollow,noarchive,nosnippet`;
+- a restrictive early meta CSP is backed by a Cloudflare response-header CSP;
+- response headers deny framing, MIME sniffing, referrers, and unnecessary browser capabilities;
+- external links use `noreferrer noopener`;
+- preview URLs receive a no-index response header;
+- no sitemap, canonical metadata, contact-bearing social metadata, tracking, or third-party resources are shipped.
+
+The future homepage is intentionally not blocked from indexing. Security headers apply to the whole static site, while crawler-blocking rules are scoped to the card.
 
 ## vCard
 
@@ -50,28 +108,36 @@ The contact file is generated from the same validated profile as the page. It us
 
 Before release, import the deployed file into both Apple Contacts and Google Contacts. Confirm the name, work email, two URLs, Discord note, and both equally prominent roles, then remove the test contact.
 
-## QR and print proof
+## On-screen and printed QR
 
-A production or local-profile generation creates ignored artifacts in `output/qr/`:
+**Show QR** opens a native dialog with a large black-on-white code for in-person scanning. With JavaScript disabled or without dialog support, the link opens the raw same-origin SVG.
 
-- a 30 mm black-on-white SVG;
-- a JSON print manifest containing the same Version 4-H matrix and its SHA-256 digest.
+The permanent custom-domain path fits a Version 3-H QR:
 
-The SVG includes the required four-module quiet zone. Do not add a logo, gradient, transparency, or decorative modules. The term QR Code is a registered trademark of DENSO WAVE INCORPORATED.
+- 29 × 29 symbol modules;
+- a four-module quiet zone on every side;
+- 37 × 37 modules overall;
+- 30 mm physical size, approximately 0.811 mm per module.
 
-An optional trim-size PDF proof is generated from that exact matrix:
+A local or production-profile generation writes the canonical SVG and print manifest to `output/qr/`. Create the trim-size PDF proof with:
 
 ```sh
 python -m pip install -r requirements-print.txt
 python scripts/create-print-proof.py
 ```
 
-The PDF is written to `output/pdf/`. Its page is 88.9 x 50.8 mm and the QR is 30 mm including its quiet zone. Ask the printer about bleed and safe-area requirements before production; this file is a proof, not a universal press template.
+The PDF is written to `output/pdf/`. Its page is 88.9 × 50.8 mm, and its 30 mm QR is drawn from the exact generated matrix. Ask the printer about bleed and safe areas; this is a proof, not a universal press template.
 
-Test the final physical proof on current iPhone and Android devices under glare, low light, rotation, distance, and partial obstruction. Verify both the printed URL and email as manual fallbacks.
+Test the final printed proof on current iPhone and Android devices under glare, low light, rotation, distance, and partial obstruction. Verify the printed URL and email as manual fallbacks. Do not add a logo, gradient, transparency, or decorative QR modules.
 
-## Physical-card lifecycle
+## Long-term URL lifecycle
 
-Treat the URL in `cardUrl` as permanent while printed cards exist. Update the content behind it, but do not rename the GitHub account or repository. If hosting moves, preserve `/me/` at the existing origin as a permanent redirect and re-test old cards. A later custom domain does not force a reprint only if the original printed URL continues serving or redirecting indefinitely; cards must be reprinted if that URL is retired.
+The custom domain and `/me/` path are the permanent identity printed into new cards. This decouples the cards from GitHub and Cloudflare: hosting can move later without reprinting as long as the same HTTPS hostname and path continue to resolve.
 
-Archive the exact production SVG, print PDF, profile revision, and a successful device-test record for every print run. NFC, wallet passes, analytics, lead capture, authentication, and a custom domain are outside v1.
+- Enable registrar MFA, auto-renew, registrar lock, expiry alerts, and DNSSEC.
+- Keep the `/me/` route working indefinitely while physical cards exist.
+- Re-test printed cards after DNS, certificate, hosting, or routing changes.
+- Archive the exact SVG, PDF, profile revision, and device-test record for each print run.
+- Preserve redirects for any previously printed GitHub-hosted URL until those cards are retired.
+
+NFC, wallet passes, analytics, lead capture, authentication, and approved organization logos remain deferred.

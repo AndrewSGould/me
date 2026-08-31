@@ -561,6 +561,11 @@
     font-weight: 800;
   }
 
+  .action__glyph--qr {
+    color: #a8f5e4;
+    font-size: 18px;
+  }
+
   .action__copy {
     display: flex;
     min-width: 0;
@@ -617,20 +622,113 @@
     text-transform: uppercase;
   }
 
-  .manual-copy {
-    margin-top: 14px;
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    color: var(--muted);
-    background: rgba(255, 255, 255, 0.035);
-    font-size: 11px;
+  .qr-dialog {
+    width: min(460px, calc(100vw - 28px));
+    max-width: none;
+    max-height: calc(100svh - 28px);
+    margin: auto;
+    padding: 1px;
+    overflow: hidden auto;
+    border: 1px solid rgba(171, 187, 255, 0.26);
+    border-radius: 28px;
+    color: var(--ink);
+    background: linear-gradient(145deg, rgba(24, 31, 72, 0.98), rgba(7, 10, 29, 0.98));
+    box-shadow: 0 38px 100px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.09);
   }
 
-  .manual-copy span {
+  .qr-dialog::backdrop {
+    background: rgba(2, 4, 17, 0.78);
+    backdrop-filter: blur(14px);
+  }
+
+  .qr-dialog__panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: 38px clamp(20px, 6vw, 34px) 30px;
+    border-radius: 27px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(117, 91, 255, 0.19), transparent 42%),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.035), transparent 58%);
+    text-align: center;
+  }
+
+  .qr-dialog__panel form {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .qr-dialog__close {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgba(171, 187, 255, 0.2);
+    border-radius: 15px;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.04);
+    font: inherit;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+  }
+
+  .qr-dialog__close:hover {
+    border-color: rgba(168, 245, 228, 0.38);
     color: var(--ink);
+    background: rgba(255, 255, 255, 0.075);
+  }
+
+  .qr-dialog h2 {
+    max-width: 11ch;
+    margin: 8px 0 8px;
+    font-size: clamp(27px, 8vw, 38px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  #qr-dialog-description {
+    max-width: 31ch;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .qr-dialog__code {
+    width: min(300px, 70vw);
+    margin: 24px 0 17px;
+    padding: 10px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  }
+
+  .qr-dialog__code img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .qr-dialog__url {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    color: #aab3d7;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 11px;
     overflow-wrap: anywhere;
+    text-decoration: none;
     user-select: all;
+  }
+
+  .qr-dialog__url:hover {
+    color: var(--cyan);
   }
 
   .status-toast {
@@ -719,6 +817,16 @@
   }
 
   @media (max-width: 430px) {
+    .qr-dialog {
+      width: calc(100vw - 20px);
+      max-height: calc(100svh - 20px);
+      border-radius: 22px;
+    }
+
+    .qr-dialog__panel {
+      border-radius: 21px;
+    }
+
     .discord-panel {
       grid-template-columns: 1fr;
     }
@@ -793,6 +901,26 @@
     }
   }
 
+  @keyframes reveal-qr {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.975);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes dim-page {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   .contact-card {
     animation: enter-card 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both, edge-orbit 16s linear infinite;
   }
@@ -830,6 +958,14 @@
 
   .card-footer {
     animation-delay: 320ms;
+  }
+
+  .qr-dialog[open] {
+    animation: reveal-qr 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .qr-dialog[open]::backdrop {
+    animation: dim-page 220ms ease-out both;
   }
 
   .is-hidden *,

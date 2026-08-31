@@ -1,46 +1,101 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { extname, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { extname, relative, resolve } from 'node:path'
 
-const dist = resolve(import.meta.dirname, '..', 'dist')
-const html = readFileSync(resolve(dist, 'index.html'), 'utf8')
+const root = resolve(import.meta.dirname, '..')
+const dist = resolve(root, 'dist')
+const documents = new Map([
+  ['/', readFileSync(resolve(dist, 'index.html'), 'utf8')],
+  ['/me/', readFileSync(resolve(dist, 'me', 'index.html'), 'utf8')],
+  ['/404.html', readFileSync(resolve(dist, '404.html'), 'utf8')],
+])
+const cardHtml = documents.get('/me/')
 
-const requiredHtmlPolicies = [
-  'http-equiv="Content-Security-Policy"',
-  'default-src &#39;none&#39;',
-  'script-src &#39;self&#39;',
-  'style-src &#39;self&#39;',
-  'img-src &#39;self&#39;',
-  'connect-src &#39;none&#39;',
-  'object-src &#39;none&#39;',
-  'base-uri &#39;none&#39;',
-  'form-action &#39;none&#39;',
-  'name="referrer" content="no-referrer"',
-  'name="robots" content="noindex,nofollow,noarchive,nosnippet"',
-]
-if (requiredHtmlPolicies.some((policy) => !html.includes(policy))) {
-  throw new Error('Built HTML is missing a required privacy or CSP policy.')
+function normalizeMeta(value) {
+  return value.replaceAll('&#39;', "'").replaceAll('&quot;', '"')
 }
 
-const cspPosition = html.indexOf('http-equiv="Content-Security-Policy"')
-const firstResourcePosition = Math.min(
-  ...['<script', '<link', '<img', '<use'].map((tag) => {
-    const position = html.indexOf(tag)
-    return position === -1 ? Number.POSITIVE_INFINITY : position
-  }),
-)
-if (cspPosition === -1 || cspPosition > firstResourcePosition) {
-  throw new Error('The meta CSP must precede every loadable resource.')
-}
-
-if (/<meta\s+(?:property|name)="(?:og:|twitter:)|rel="(?:canonical|sitemap)"/i.test(html)) {
-  throw new Error('Built HTML contains disallowed discovery or social metadata.')
-}
-
-for (const match of html.matchAll(/<(?:script|link|img|source|use)\b[^>]*(?:src|href)="([^"]+)"/gi)) {
-  const resource = match[1]
-  if (/^(?:https?:)?\/\//i.test(resource) || (!resource.startsWith('/me/') && !resource.startsWith('data:'))) {
-    throw new Error('A loadable runtime resource is not same-origin under /me/.')
+for (const [route, html] of documents) {
+  const normalized = normalizeMeta(html)
+  const cspPosition = html.indexOf('http-equiv="Content-Security-Policy"')
+  const firstResourcePosition = Math.min(
+    ...['<script', '<link', '<img', '<use'].map((tag) => {
+      const position = html.indexOf(tag)
+      return position === -1 ? Number.POSITIVE_INFINITY : position
+    }),
+  )
+  if (cspPosition === -1 || cspPosition > firstResourcePosition) {
+    throw new Error('The meta CSP must precede every loadable resource in ' + route + '.')
   }
+  for (const directive of [
+    "default-src 'none'",
+    "style-src 'self'",
+    "img-src 'self'",
+    "connect-src 'none'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'none'",
+  ]) {
+    if (!normalized.includes(directive)) throw new Error('The meta CSP for ' + route + ' is incomplete.')
+  }
+  if (!html.includes('name="referrer" content="no-referrer"')) {
+    throw new Error('The no-referrer meta policy is missing from ' + route + '.')
+  }
+}
+
+if (!cardHtml.includes('name="robots" content="noindex,nofollow,noarchive,nosnippet"')) {
+  throw new Error('The card is missing its crawler-blocking metadata.')
+}
+if (/<meta\s+(?:property|name)="(?:og:|twitter:)|rel="(?:canonical|sitemap)"/i.test(cardHtml)) {
+  throw new Error('The card contains disallowed discovery or social metadata.')
+}
+if (!cardHtml.includes('href="/me/card-qr.svg"') || !cardHtml.includes('src="/me/card-qr.svg"')) {
+  throw new Error('The card must expose its QR as both a direct fallback and dialog image.')
+}
+
+const webQr = readFileSync(resolve(dist, 'me', 'card-qr.svg'), 'utf8')
+if (
+  !webQr.includes('width="30mm" height="30mm" viewBox="0 0 37 37"') ||
+  !webQr.includes('<rect width="37" height="37" fill="#fff"/>') ||
+  !webQr.includes('<path fill="#000"')
+) {
+  throw new Error('The built QR must retain Version 3 geometry and opaque black-on-white rendering.')
+}
+
+const resourcePattern = /<(?:script|link|img|source|use)\b[^>]*(?:src|href)="([^"]+)"/gi
+for (const [route, html] of documents) {
+  for (const match of html.matchAll(resourcePattern)) {
+    const resource = match[1]
+    if (resource.startsWith('data:')) continue
+    const resolvedResource = new URL(resource, new URL(route, 'https://site.invalid'))
+    if (resolvedResource.origin !== 'https://site.invalid') {
+      throw new Error('A loadable resource in ' + route + ' is not same-origin.')
+    }
+  }
+}
+
+if (existsSync(resolve(dist, 'card-qr.svg'))) {
+  throw new Error('A stale QR remains at the origin root.')
+}
+if (readdirSync(dist).some((name) => name.toLowerCase().endsWith('.vcf'))) {
+  throw new Error('A stale contact file remains at the origin root.')
+}
+
+const headers = readFileSync(resolve(dist, '_headers'), 'utf8')
+for (const policy of [
+  'Content-Security-Policy:',
+  "frame-ancestors 'none'",
+  'Referrer-Policy: no-referrer',
+  'X-Content-Type-Options: nosniff',
+  'X-Robots-Tag: noindex, nofollow, noarchive, nosnippet',
+  'Permissions-Policy:',
+  'Cache-Control: public, max-age=31536000, immutable',
+]) {
+  if (!headers.includes(policy)) throw new Error('The Cloudflare header rules are incomplete.')
+}
+
+const robots = readFileSync(resolve(dist, 'robots.txt'), 'utf8')
+if (!/^User-agent: \*\r?\nDisallow: \/me\/\s*$/u.test(robots)) {
+  throw new Error('robots.txt must discourage crawling only for /me/.')
 }
 
 const assetFiles = []
@@ -61,4 +116,8 @@ if (/\b(?:fetch|XMLHttpRequest|WebSocket|EventSource)\s*\(|serviceWorker\s*\./.t
   throw new Error('A built asset contains a runtime network or service-worker API.')
 }
 
-console.log('Runtime policy: same-origin static resources only; privacy metadata and CSP present')
+console.log(
+  'Runtime policy: root and /me/ are static, same-origin only (' +
+    relative(dist, resolve(dist, 'me', 'index.html')) +
+    ')',
+)

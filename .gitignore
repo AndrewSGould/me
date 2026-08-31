@@ -8,13 +8,15 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.wrangler/
 dist
 dist-ssr
 *.local
-index.html
 .profile.local.json
 src/generated/
-public/*.vcf
+me/index.html
+public/me/*.vcf
+public/me/card-qr.svg
 output/
 tmp/
 

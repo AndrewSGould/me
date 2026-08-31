@@ -1,5 +1,5 @@
 import './style.css'
-import { copyValue, shareValue } from './contact-actions.mjs'
+import { copyValue } from './contact-actions.mjs'
 import { profile } from './generated/profile.ts'
 
 document.documentElement.classList.remove('no-js')
@@ -7,8 +7,8 @@ document.documentElement.classList.add('js')
 
 const status = document.querySelector<HTMLElement>('[data-status]')
 const handle = document.querySelector<HTMLElement>('[data-discord-handle]')
-const manualCopy = document.querySelector<HTMLElement>('[data-manual-copy]')
-const manualUrl = document.querySelector<HTMLElement>('[data-manual-url]')
+const showQrControl = document.querySelector<HTMLAnchorElement>('[data-show-qr]')
+const qrDialog = document.querySelector<HTMLDialogElement>('[data-qr-dialog]')
 
 let statusTimer: number | undefined
 
@@ -41,24 +41,18 @@ document.querySelector<HTMLButtonElement>('[data-copy-discord]')?.addEventListen
   announce(result === 'copied' ? 'Discord username copied.' : 'Username selected. Copy it from the card.')
 })
 
-document.querySelector<HTMLButtonElement>('[data-share-card]')?.addEventListener('click', async () => {
-  const result = await shareValue(
-    {
-      title: `${profile.fullName} — digital business card`,
-      text: `Connect with ${profile.fullName}`,
-      url: profile.cardUrl,
-    },
-    {
-      share: navigator.share?.bind(navigator),
-      writeText,
-      revealFallback: () => {
-        if (manualCopy) manualCopy.hidden = false
-      },
-      selectFallback: () => selectText(manualUrl),
-    },
-  )
-  if (result === 'aborted' || result === 'shared') return
-  announce(result === 'copied' ? 'Card link copied.' : 'Card link selected. Copy it from the card.')
+showQrControl?.addEventListener('click', (event) => {
+  if (!qrDialog || typeof qrDialog.showModal !== 'function') return
+  event.preventDefault()
+  if (!qrDialog.open) qrDialog.showModal()
+})
+
+qrDialog?.addEventListener('click', (event) => {
+  if (event.target === qrDialog) qrDialog.close()
+})
+
+qrDialog?.addEventListener('close', () => {
+  showQrControl?.focus({ preventScroll: true })
 })
 
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')

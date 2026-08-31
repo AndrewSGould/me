@@ -99,7 +99,7 @@ test('creates a portable role-neutral vCard', () => {
   assert.match(unfolded, /N:Morgan;Alex;;;\r\n/)
   assert.match(unfolded, /NICKNAME:alex\r\n/)
   assert.match(unfolded, /EMAIL;TYPE=INTERNET,WORK,PREF:alex@example\.com\r\n/)
-  assert.match(unfolded, /URL:https:\/\/example\.github\.io\/me\/\r\n/)
+  assert.match(unfolded, /URL:https:\/\/example\.dev\/me\/\r\n/)
   assert.match(unfolded, /URL:https:\/\/www\.linkedin\.com\/in\/example\r\n/)
   assert.match(unfolded, /Product Engineer - Company One/)
   assert.match(unfolded, /Digital Programs Lead - Organization Two/)
@@ -127,26 +127,26 @@ test('preserves validated URI punctuation in vCard URL properties', () => {
   assert.doesNotMatch(vcard, /URL:https:\/\/example\.com\/a\\,b\\;c/)
 })
 
-test('creates an opaque 30 mm Version 4-H QR with a four-module quiet zone', () => {
+test('creates an opaque 30 mm Version 3-H QR with a four-module quiet zone', () => {
   const prefix = 'https://example.test/'
-  const payload = prefix + 'x'.repeat(34 - Buffer.byteLength(prefix))
-  assert.equal(Buffer.byteLength(payload), 34)
+  const payload = prefix + 'x'.repeat(24 - Buffer.byteLength(prefix))
+  assert.equal(Buffer.byteLength(payload), 24)
   const qr = makeQrArtifacts(payload)
-  assert.equal(qr.matrix.length, 41)
+  assert.equal(qr.matrix.length, 37)
   assert.equal(qr.manifest.payload, payload)
-  assert.equal(qr.manifest.version, 4)
+  assert.equal(qr.manifest.version, 3)
   assert.equal(qr.manifest.errorCorrection, 'H')
   assert.match(qr.manifest.matrixSha256, /^[a-f0-9]{64}$/)
   assert.match(qr.svg, /width="30mm" height="30mm"/)
-  assert.match(qr.svg, /<rect width="41" height="41" fill="#fff"\/>/)
+  assert.match(qr.svg, /<rect width="37" height="37" fill="#fff"\/>/)
   assert.match(qr.svg, /<path fill="#000"/)
-  for (let y = 0; y < 41; y += 1) {
-    for (let x = 0; x < 41; x += 1) {
-      if (x < 4 || y < 4 || x >= 37 || y >= 37) assert.equal(qr.matrix[y][x], false)
+  for (let y = 0; y < 37; y += 1) {
+    for (let x = 0; x < 37; x += 1) {
+      if (x < 4 || y < 4 || x >= 33 || y >= 33) assert.equal(qr.matrix[y][x], false)
     }
   }
   assert.equal(makeQrArtifacts(payload).manifest.svgSha256, qr.manifest.svgSha256)
-  const bitmap = new Bitmap({ width: 41, height: 41 }, qr.matrix)
+  const bitmap = new Bitmap({ width: 37, height: 37 }, qr.matrix).scale(4)
   assert.equal(decodeQR(bitmap.toImage()), payload)
   assert.throws(() => makeQrArtifacts(`${payload}x`), /capacity|version|data|length/i)
 })

@@ -20,7 +20,7 @@ OUTPUT_DIR = ROOT / "output" / "pdf"
 CARD_WIDTH = 88.9 * mm
 CARD_HEIGHT = 50.8 * mm
 QR_SIZE = 30 * mm
-PERMANENT_CARD_URL_SHA256 = "b4ad5e3c8aa7a16a4cf1a13f88085d80c4cc398fdbefaee75fd75ef9547f3124"
+PERMANENT_CARD_URL_SHA256 = "b7e7d99e2dbc2b00012672c352c9cce56537acbd6e12b5d7b2ad187d92342a9f"
 
 
 def fit_text(text: str, font: str, starting_size: float, max_width: float) -> float:
@@ -123,29 +123,29 @@ def validate_qr_artifacts(manifest: dict, matrix: list[list[bool]]) -> None:
     qr = manifest["qr"]
     expected_metadata = {
         "encoding": "byte",
-        "version": 4,
+        "version": 3,
         "errorCorrection": "H",
-        "symbolModules": 33,
+        "symbolModules": 29,
         "quietZoneModules": 4,
-        "canvasModules": 41,
+        "canvasModules": 37,
         "overallSizeMm": 30,
     }
     if any(qr.get(key) != value for key, value in expected_metadata.items()):
         raise ValueError("QR metadata does not match the permanent print specification.")
 
     payload = qr.get("payload", "")
-    if len(payload.encode("utf-8")) != 34:
-        raise ValueError("Permanent QR payload must be exactly 34 UTF-8 bytes.")
+    if len(payload.encode("utf-8")) != 22:
+        raise ValueError("Permanent QR payload must be exactly 22 UTF-8 bytes.")
     if hashlib.sha256(payload.encode("utf-8")).hexdigest() != PERMANENT_CARD_URL_SHA256:
         raise ValueError("QR payload does not match the permanent card URL.")
 
-    if len(matrix) != 41 or any(len(row) != 41 for row in matrix):
-        raise ValueError("QR matrix must be 41 by 41 modules including its quiet zone.")
+    if len(matrix) != 37 or any(len(row) != 37 for row in matrix):
+        raise ValueError("QR matrix must be 37 by 37 modules including its quiet zone.")
     if any(not isinstance(value, bool) for row in matrix for value in row):
         raise ValueError("QR matrix must contain only boolean modules.")
     for y, row in enumerate(matrix):
         for x, value in enumerate(row):
-            if (x < 4 or y < 4 or x >= 37 or y >= 37) and value:
+            if (x < 4 or y < 4 or x >= 33 or y >= 33) and value:
                 raise ValueError("QR matrix does not have a clear four-module quiet zone.")
 
     serialized_matrix = json.dumps(matrix, separators=(",", ":")).encode("utf-8")
@@ -160,7 +160,7 @@ def validate_qr_artifacts(manifest: dict, matrix: list[list[bool]]) -> None:
     if hashlib.sha256(svg_bytes).hexdigest() != qr.get("svgSha256"):
         raise ValueError("Canonical QR SVG digest does not match the generated manifest.")
     svg = svg_bytes.decode("utf-8")
-    if 'width="30mm" height="30mm" viewBox="0 0 41 41"' not in svg:
+    if 'width="30mm" height="30mm" viewBox="0 0 37 37"' not in svg:
         raise ValueError("Canonical QR SVG dimensions do not match the print specification.")
 
     matrix_cells = {(x, y) for y, row in enumerate(matrix) for x, value in enumerate(row) if value}

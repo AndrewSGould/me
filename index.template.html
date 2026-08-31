@@ -112,11 +112,18 @@
               <span class="action__copy"><strong>LinkedIn</strong><small>View profile</small></span>
               <span class="action__arrow" aria-hidden="true">↗</span>
             </a>
-            <button class="action no-js-hidden" type="button" data-share-card data-magnetic>
-              <span class="action__glyph" aria-hidden="true">⌁</span>
-              <span class="action__copy"><strong>Share card</strong><small>Send this link</small></span>
+            <a
+              class="action"
+              href="{{QR_PATH}}"
+              target="_blank"
+              rel="noreferrer noopener"
+              data-show-qr
+              data-magnetic
+            >
+              <span class="action__glyph action__glyph--qr" aria-hidden="true">▦</span>
+              <span class="action__copy"><strong>Show QR</strong><small>Let someone scan</small></span>
               <span class="action__arrow" aria-hidden="true">↗</span>
-            </button>
+            </a>
           </nav>
 
           <footer class="card-footer">
@@ -126,12 +133,30 @@
             <span class="card-footer__privacy">No trackers. No analytics.</span>
           </footer>
 
-          <p class="manual-copy" data-manual-copy hidden>
-            Copy this link: <span data-manual-url>{{CARD_URL}}</span>
-          </p>
           <p class="status-toast" role="status" aria-live="polite" aria-atomic="true" data-status></p>
         </article>
       </div>
+
+      <dialog class="qr-dialog" aria-labelledby="qr-dialog-title" aria-describedby="qr-dialog-description" data-qr-dialog>
+        <div class="qr-dialog__panel">
+          <form method="dialog">
+            <button class="qr-dialog__close" type="submit" aria-label="Close QR code" autofocus>×</button>
+          </form>
+          <p class="eyebrow">Share in person</p>
+          <h2 id="qr-dialog-title">Scan to open this card</h2>
+          <p id="qr-dialog-description">Point a phone camera at the code. No app required.</p>
+          <div class="qr-dialog__code">
+            <img
+              src="{{QR_PATH}}"
+              width="300"
+              height="300"
+              decoding="async"
+              alt="QR code that opens {{FULL_NAME}}&#39;s digital business card"
+            />
+          </div>
+          <a class="qr-dialog__url" href="{{CARD_URL}}">{{CARD_URL_DISPLAY}}</a>
+        </div>
+      </dialog>
     </main>
 
     <script type="module" src="/src/main.ts"></script>

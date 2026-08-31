@@ -13,13 +13,18 @@
     "check:budgets": "node scripts/check-budgets.mjs",
     "check:profile-source": "node scripts/check-profile-source.mjs",
     "check:runtime": "node scripts/check-runtime-policy.mjs",
+    "check:production-artifact": "node scripts/check-production-artifact.mjs",
     "test": "node --test tests/*.test.mjs",
     "typecheck": "npm run generate && tsc",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:cloudflare": "npm run build && wrangler dev",
+    "deploy:cloudflare": "npm run check:production-artifact && wrangler deploy",
+    "deploy:cloudflare:preview": "wrangler versions upload"
   },
   "devDependencies": {
     "qr": "0.6.0",
     "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "wrangler": "4.127.1"
   }
 }
