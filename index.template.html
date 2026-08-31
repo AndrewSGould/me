@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="{{CSP}}" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07091c" />
+    <title>{{FULL_NAME}} — Digital Business Card</title>
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true">
+      <span class="ambient__orb ambient__orb--violet"></span>
+      <span class="ambient__orb ambient__orb--cyan"></span>
+      <span class="ambient__orb ambient__orb--rose"></span>
+      <span class="ambient__grid"></span>
+    </div>
+
+    <main class="page-shell">
+      <div class="card-stage" data-tilt-root>
+        <article class="contact-card" aria-labelledby="card-title">
+          <div class="contact-card__spotlight" aria-hidden="true"></div>
+
+          <header class="identity">
+            <div class="monogram" aria-hidden="true">
+              <span>A</span><i></i><span>G</span>
+            </div>
+            <div class="identity__copy">
+              <p class="eyebrow">Digital calling card <span>·</span> 01</p>
+              <h1 id="card-title">{{FULL_NAME}}</h1>
+              <p class="identity__lede">Two disciplines. One direct line.</p>
+            </div>
+            <div class="signal" aria-label="Available on Discord">
+              <span class="signal__pulse" aria-hidden="true"></span>
+              Discord preferred
+            </div>
+          </header>
+
+          <section class="roles" aria-label="Professional roles">
+            <article class="role-card">
+              <div class="role-mark" aria-hidden="true">{{ROLE_1_MARK}}</div>
+              <div class="role-card__copy">
+                <p class="role-card__number">Role 01</p>
+                <h2>{{ROLE_1_TITLE}}</h2>
+                <p>{{ROLE_1_ORGANIZATION}}</p>
+              </div>
+              <span class="role-card__arrow" aria-hidden="true">↗</span>
+            </article>
+
+            <article class="role-card">
+              <div class="role-mark role-mark--alt" aria-hidden="true">{{ROLE_2_MARK}}</div>
+              <div class="role-card__copy">
+                <p class="role-card__number">Role 02</p>
+                <h2>{{ROLE_2_TITLE}}</h2>
+                <p>{{ROLE_2_ORGANIZATION}}</p>
+              </div>
+              <span class="role-card__arrow" aria-hidden="true">↗</span>
+            </article>
+          </section>
+
+          <section class="discord-panel" aria-labelledby="discord-title">
+            <div class="discord-panel__header">
+              <span class="discord-mark" aria-hidden="true">
+                <svg viewBox="0 0 20 19" focusable="false">
+                  <use href="/me/icons.svg#discord-icon"></use>
+                </svg>
+              </span>
+              <div>
+                <p class="eyebrow eyebrow--discord">Best place to reach me</p>
+                <h2 id="discord-title">Discord</h2>
+              </div>
+            </div>
+
+            <div class="discord-profile">
+              <span class="discord-profile__name">{{DISPLAY_NAME}}</span>
+              <code class="discord-profile__handle">@<span data-discord-handle>{{DISCORD_USERNAME}}</span></code>
+            </div>
+
+            <div class="discord-actions">
+              <button class="button button--discord no-js-hidden" type="button" data-copy-discord data-magnetic>
+                <span>Copy username</span>
+                <span class="button__icon" aria-hidden="true">⌘</span>
+              </button>
+              <a class="button button--discord button--ghost" href="{{DISCORD_DEEP_LINK}}" data-magnetic>
+                <span>Open Discord</span>
+                <span class="button__icon" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </section>
+
+          <nav class="contact-actions" aria-label="Other contact options">
+            <a class="action" href="{{VCARD_PATH}}" download data-magnetic>
+              <span class="action__glyph" aria-hidden="true">＋</span>
+              <span class="action__copy"><strong>Add to contacts</strong><small>VCF file</small></span>
+              <span class="action__arrow" aria-hidden="true">↓</span>
+            </a>
+            <a class="action" href="{{MAILTO_URL}}" data-magnetic>
+              <span class="action__glyph" aria-hidden="true">@</span>
+              <span class="action__copy"><strong>Email</strong><small>{{EMAIL}}</small></span>
+              <span class="action__arrow" aria-hidden="true">↗</span>
+            </a>
+            <a
+              class="action"
+              href="{{LINKEDIN_URL}}"
+              target="_blank"
+              rel="noreferrer noopener"
+              referrerpolicy="no-referrer"
+              data-magnetic
+            >
+              <span class="action__glyph action__glyph--in" aria-hidden="true">in</span>
+              <span class="action__copy"><strong>LinkedIn</strong><small>View profile</small></span>
+              <span class="action__arrow" aria-hidden="true">↗</span>
+            </a>
+            <button class="action no-js-hidden" type="button" data-share-card data-magnetic>
+              <span class="action__glyph" aria-hidden="true">⌁</span>
+              <span class="action__copy"><strong>Share card</strong><small>Send this link</small></span>
+              <span class="action__arrow" aria-hidden="true">↗</span>
+            </button>
+          </nav>
+
+          <footer class="card-footer">
+            <a href="{{MAILTO_URL}}">{{EMAIL}}</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{CARD_URL}}" data-card-url>{{CARD_URL_DISPLAY}}</a>
+            <span class="card-footer__privacy">No trackers. No analytics.</span>
+          </footer>
+
+          <p class="manual-copy" data-manual-copy hidden>
+            Copy this link: <span data-manual-url>{{CARD_URL}}</span>
+          </p>
+          <p class="status-toast" role="status" aria-live="polite" aria-atomic="true" data-status></p>
+        </article>
+      </div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "fullName": "Alex Morgan",
+  "givenName": "Alex",
+  "familyName": "Morgan",
+  "roles": [
+    {
+      "mark": "C1",
+      "title": "Product Engineer",
+      "organization": "Company One"
+    },
+    {
+      "mark": "C2",
+      "title": "Digital Programs Lead",
+      "organization": "Organization Two"
+    }
+  ],
+  "email": "alex@example.com",
+  "linkedinUrl": "https://www.linkedin.com/in/example",
+  "cardUrl": "https://example.github.io/me/",
+  "discord": {
+    "displayName": "alex",
+    "username": "alex_example",
+    "userId": "123456789012345678"
+  }
+}

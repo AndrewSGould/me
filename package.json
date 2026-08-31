@@ -1,0 +1,25 @@
+{
+  "name": "me",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate-profile.mjs --build",
+    "generate:production": "node scripts/generate-profile.mjs --production",
+    "predev": "node scripts/generate-profile.mjs --dev",
+    "dev": "vite",
+    "build": "npm run generate && tsc && vite build && npm run check:budgets && npm run check:runtime",
+    "build:production": "npm run check:profile-source && npm run generate:production && tsc && vite build && npm run check:budgets && npm run check:runtime",
+    "check:budgets": "node scripts/check-budgets.mjs",
+    "check:profile-source": "node scripts/check-profile-source.mjs",
+    "check:runtime": "node scripts/check-runtime-policy.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "typecheck": "npm run generate && tsc",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "qr": "0.6.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}
