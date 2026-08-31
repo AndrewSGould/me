@@ -9,6 +9,7 @@ const styles = readFileSync(resolve(root, 'src', 'style.css'), 'utf8')
 const script = readFileSync(resolve(root, 'src', 'main.ts'), 'utf8')
 const generator = readFileSync(resolve(root, 'scripts', 'generate-profile.mjs'), 'utf8')
 const home = readFileSync(resolve(root, 'index.html'), 'utf8')
+const notFound = readFileSync(resolve(root, '404.html'), 'utf8')
 const viteConfig = readFileSync(resolve(root, 'vite.config.ts'), 'utf8')
 
 test('keeps essential contact routes and details available without JavaScript', () => {
@@ -190,6 +191,17 @@ test('keeps the homepage and permanent card route as separate Vite entries', () 
   assert.match(generator, /writeFileSync\(resolve\(root, 'me', 'index\.html'\), html\)/)
   assert.match(generator, /resolve\(root, 'public', 'me', webQrFileName\)/)
   assert.match(template, /href="\/me\/icons\.svg#discord-icon"/)
+})
+
+test('uses the creature artwork for shared browser and home-screen icons', () => {
+  for (const document of [home, template, notFound]) {
+    assert.match(document, /rel="icon" href="\/favicon\.ico"/)
+  }
+  for (const document of [home, notFound]) {
+    assert.match(document, /rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png"/)
+  }
+  assert.equal(existsSync(resolve(root, 'public', 'favicon.ico')), true)
+  assert.equal(existsSync(resolve(root, 'public', 'apple-touch-icon.png')), true)
 })
 
 test('includes Cloudflare static-asset routing, headers, and crawler controls', () => {
