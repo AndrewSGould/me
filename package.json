@@ -22,7 +22,7 @@
     "deploy:cloudflare:preview": "wrangler versions upload"
   },
   "devDependencies": {
-    "qr": "0.6.0",
+    "qr": "0.7.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
     "wrangler": "4.127.1"

@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       qr:
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
@@ -656,8 +656,8 @@ packages:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  qr@0.6.0:
-    resolution: {integrity: sha512-P23VoX7SipHALdiIYG+D+LT/6n22dNKwV92FAb3d+Nlki/5WisSsfLt0UDFz2XEBtuwrECTznvu+chKKFCSYhA==}
+  qr@0.7.0:
+    resolution: {integrity: sha512-/VrrACmOAwZVipuRITwfEwOL5oAMEHH5PTmBWaGtlTom2Thxaa+rhmna4zU9PRN2uLw2wdccbkHOLGZb1Q9SdA==}
     engines: {node: '>= 20.19.0'}
 
   rolldown@1.2.6:
@@ -1192,7 +1192,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  qr@0.6.0: {}
+  qr@0.7.0: {}
 
   rolldown@1.2.6:
     dependencies:
